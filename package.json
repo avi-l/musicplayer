@@ -8,7 +8,8 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "postinstall": "node scripts/rn-fetch-blob_warning.js"
   },
   "dependencies": {
     "@avi-l/jsmediatags": "^3.9.7-u8",
@@ -16,6 +17,8 @@
     "@react-native-community/slider": "4.2.1",
     "@react-navigation/bottom-tabs": "^6.3.1",
     "@react-navigation/native": "^6.0.10",
+    "@rneui/base": "github:react-native-elements/react-native-elements#base",
+    "@rneui/themed": "github:react-native-elements/react-native-elements#themed",
     "buffer": "^6.0.3",
     "react": "17.0.2",
     "react-dom": "17.0.2",

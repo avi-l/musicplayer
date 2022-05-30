@@ -1,15 +1,12 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, FlatList } from 'react-native'
 import React, { useContext } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import AudioContext from '../context/AudioProvider'
 import { colorScheme } from '../constants/constants'
-import { ListItem, Avatar } from '@rneui/themed'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import { TabActions, useNavigation } from '@react-navigation/native'
-export default function Playlist() {
-  const navigation = useNavigation()
-  const { songList } = useContext(AudioContext)
+import { List, ListItem, Avatar } from '@rneui/themed'
 
+export default function Artists() {
+  const { songList } = useContext(AudioContext)
   const keyExtractor = (item, index) => index.toString()
 
   const renderItem = ({ item }) => (
@@ -30,11 +27,7 @@ export default function Playlist() {
           keyExtractor={keyExtractor}
           renderItem={renderItem}
         />
-        {/* <TouchableOpacity onPress={() => navigation.dispatch(TabActions.jumpTo('Add Audio'))}>
-          <MaterialCommunityIcons name='playlist-plus' size={30} />
-        </TouchableOpacity> */}
       </View>
-
     </SafeAreaView>
 
   )

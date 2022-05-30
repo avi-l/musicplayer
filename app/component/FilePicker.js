@@ -1,21 +1,20 @@
-import React, { useEffect, useContext, useState, useCallback } from 'react'
-
-import { Image, StyleSheet, SafeAreaView, StatusBar, View, Text, Button } from 'react-native'
+import { StackActions, TabActions, useNavigation } from '@react-navigation/native';
+import React, { useContext, useState, useCallback } from 'react'
+import { Button, ButtonGroup, withTheme } from '@rneui/base';
+import { Image, StyleSheet, SafeAreaView, StatusBar, View, Text } from 'react-native'
 import DocumentPicker, {
-    DirectoryPickerResponse,
-    DocumentPickerResponse,
-    isInProgress,
-    types,
+    DirectoryPickerResponse, DocumentPickerResponse, isInProgress, types,
 } from 'react-native-document-picker'
 import RNFetchBlob from 'rn-fetch-blob';
 import AudioContext from '../context/AudioProvider';
 import { extractMetaData, buffer2base64 } from '../utilities/utils';
+import { colorScheme } from '../constants/constants';
 
 
 const FilePicker = () => {
     const [fileResponse, setFileResponse] = useState();
-    const [imgString, setImgString] = useState()
-    const { songList, updateSongList } = useContext(AudioContext)
+    const { updateSongList } = useContext(AudioContext)
+    const navigation = useNavigation()
 
     const handleDocumentSelection = useCallback(async () => {
         try {
@@ -36,9 +35,9 @@ const FilePicker = () => {
                 album: metaData.tags.album,
                 artwork: `data:${format};base64,${base64img}`
             }
-
             setFileResponse(newSongObj);
             await updateSongList(newSongObj)
+            navigation.dispatch(TabActions.jumpTo('Playlist'))
         } catch (err) {
             console.warn(err);
         }
@@ -46,30 +45,26 @@ const FilePicker = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-
-            {/* {fileResponse.map((file, index) => (
-                <><Text
-                    key={index.toString()}
-                    style={styles.uri}
-                    numberOfLines={1}
-                    ellipsizeMode={'middle'}>
-                    {file?.width}
-                    {file?.heigth}
-
-                </Text>
-                </>
-
-            ))} */}
-            {/* <Text style={{color: 'black'}}>{fileResponse}</Text> */}
-            
-            <Image source={{ uri: fileResponse?.artwork }} size={75} style={{
+            {/* <Image source={{ uri: fileResponse?.artwork }} size={75} style={{
                 width: 150,
-                height:  150,
+                height: 150,
                 borderRadius: 15,
-                backgroundColor: 'red',
-            }} />
-          
-            <Button title="Select 📑" onPress={handleDocumentSelection} />
+            }} /> */}
+            <Button type="outline"
+              containerStyle={{
+                width: 200,
+                marginHorizontal: 50,
+                marginVertical: 10,
+              }}
+                buttonStyle={{
+                    borderColor: colorScheme.light,
+                    borderRadius: 10
+                    
+                }}
+                titleStyle={{color: colorScheme.light}}
+                title="Select A Song"
+                onPress={() => handleDocumentSelection()} 
+                />
         </SafeAreaView>
     );
 };
@@ -79,12 +74,15 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        // backgroundColor: '#fff',
+        backgroundColor: colorScheme.darkest,
     },
     uri: {
         paddingBottom: 8,
         paddingHorizontal: 18,
     },
+    button: {
+        color: colorScheme.light
+    }
 });
 
 export default FilePicker; 

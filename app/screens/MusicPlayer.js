@@ -1,6 +1,6 @@
 import {
     Image, View, TouchableOpacity,
-    Dimensions, StyleSheet, Text, Animated, ActivityIndicator
+    Dimensions, StyleSheet, Text, Animated, ActivityIndicator, Modal
 } from 'react-native'
 import React, { useEffect, useContext, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -16,6 +16,9 @@ import TrackPlayer,
 } from 'react-native-track-player'
 import AudioContext from '../context/AudioProvider'
 import { colorScheme } from '../constants/constants'
+import FilePicker from '../component/FilePicker'
+import FilePickerModal from '../../assets/modals/FilePickerModal'
+import { TabActions, useNavigation } from '@react-navigation/native'
 const { width, height } = Dimensions.get('window')
 
 export default function MusicPlayer() {
@@ -29,7 +32,9 @@ export default function MusicPlayer() {
     const [trackArtwork, setTrackArtwork] = useState()
     const [trackTitle, setTrackTitle] = useState()
     const [trackArtist, setTrackArtist] = useState()
+    const [showModal, setShowModal] = useState(false);
     const { songList } = useContext(AudioContext)
+    const navigation = useNavigation()
 
     useTrackPlayerEvents([Event.PlaybackTrackChanged], async event => {
         if (event.type === Event.PlaybackTrackChanged && event.nextTrack !== null) {
@@ -51,12 +56,28 @@ export default function MusicPlayer() {
         return () => {
             scrollX.removeAllListeners()
         }
-    }, [songList])
+    }, [])
+    // useEffect(() => {
+    //     (async () => {
+    //         try {
+    //             const tracks = songList.map(track => track)
+    //             TrackPlayer.setupPlayer().then(async (res) => {
+    //                 TrackPlayer.add(songList).then(res => console.log(res)).catch((err) => console.log(err))
+                  
+    //             })
+    //             .catch(async err => {
+    //                 TrackPlayer.add(songList).then(res => console.log(res)).catch((err) => console.log(err))
+    //             })
+               
+    //         } catch (error) {
+    //             console.log('error adding tracks: ' + error)
+    //         } 
+    //     })()
+    // },[songList])
 
     const setUpPlayer = async () => {
-        console.log(songList)
         try {
-            await TrackPlayer.setupPlayer({})
+            await TrackPlayer.setupPlayer()
             await TrackPlayer.updateOptions({
                 capabilities: [
                     Capability.Play,
@@ -65,19 +86,22 @@ export default function MusicPlayer() {
                     Capability.SkipToPrevious,
                 ]
             })
-            await TrackPlayer.add(songList.map(i=>i))
+            await TrackPlayer.add(songList)
+    
             setIsLoading(false)
         } catch (error) {
             console.log(error)
             setIsLoading(false)
         }
     }
-
+    const chooseSongs = <>
+        {showModal && <FilePickerModal showModal={showModal} setShowModal={setShowModal} />}
+    </>
     const togglePlayback = async (playbackState) => {
-            if (playbackState == State.Playing)
-                await TrackPlayer.pause()
-            else
-                await TrackPlayer.play() 
+        if (playbackState == State.Playing)
+            await TrackPlayer.pause()
+        else
+            await TrackPlayer.play()
     }
 
     const skipToNext = async () => {
@@ -139,8 +163,6 @@ export default function MusicPlayer() {
         )
     }
 
-
-
     if (isLoading) {
         return (
             <View style={styles.activityIndicator} >
@@ -152,6 +174,7 @@ export default function MusicPlayer() {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.mainContainer}>
+                {chooseSongs}
                 <View style={{ width: width }}>
                     <Animated.FlatList
                         ref={songSlider}
@@ -212,18 +235,15 @@ export default function MusicPlayer() {
             </View>
             <View style={styles.bottomContainer}>
                 <View style={styles.bottomControls}>
-                    <TouchableOpacity onPress={() => { console.log('hey') }}>
+                    {/* <TouchableOpacity onPress={() => { console.log('hey') }}>
                         <Ionicons name="heart-outline" size={30} color={colorScheme.light} />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <TouchableOpacity onPress={() => changeRepeatMode()}>
                         <MaterialCommunityIcons name={`${repeatIcon()}`} size={30} color={repeatMode !== 'off' ? colorScheme.lightest : colorScheme.light} />
                     </TouchableOpacity>
-                    {/* <TouchableOpacity onPress={() => { console.log('hey') }}>
-                        <Ionicons name="upload" size={30} color={colorScheme.light} />
-                    </TouchableOpacity> */}
-                    <TouchableOpacity onPress={() => handlePicker()}>
+                    {/* <TouchableOpacity onPress={() => { navigation.dispatch(TabActions.jumpTo('Add Audio'))}}>
                         <Ionicons name="ellipsis-horizontal-outline" size={30} color={colorScheme.light} />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
                 </View>
             </View>
@@ -249,21 +269,24 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     bottomContainer: {
-        borderTopColor: colorScheme.light,
-        borderTopWidth: 1,
+        // borderTopColor: colorScheme.light,
+        // borderTopWidth: 1,
         width: width,
         alignItems: 'center',
         paddingVertical: 15,
         backgroundColor: colorScheme.darkest,
     },
     bottomControls: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '80%'
+        alignContent: 'center',
+        marginBottom: 20,
+                // flexDirection: 'column',
+        // justifyContent: 'space-between',
+        // width: '80%'
     },
     artworkWrapper: {
         width: 300,
-        height: 340,
+        height: 300,
+        marginTop: 25,
         marginBottom: 25,
     },
     artworkImg: {

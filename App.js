@@ -3,15 +3,18 @@ import { StyleSheet, ActivityIndicator, StatusBar, Text, View } from 'react-nati
 import { NavigationContainer } from '@react-navigation/native';
 import AppNavigator from './app/navigation/AppNavigator';
 import { AudioProvider } from './app/context/AudioProvider';
-import { initializePlayer } from './app/utilities/utils';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 
 export default function App() {
   return (
-    <AudioProvider>
-    <NavigationContainer>
-      <AppNavigator />
-    </NavigationContainer>
-    </AudioProvider>
+    <SafeAreaProvider>
+      <AudioProvider>
+        <NavigationContainer>
+          <AppNavigator />
+        </NavigationContainer>
+      </AudioProvider>
+    </SafeAreaProvider>
   );
 }
 

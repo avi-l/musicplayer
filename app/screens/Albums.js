@@ -1,11 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Albums() {
   return (
-    <View>
+    <SafeAreaView style={styles.container}>
+    <View style={styles.mainContainer}>
       <Text>Albums</Text>
     </View>
+    </SafeAreaView>
   )
 }
 
@@ -15,4 +18,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
+    mainContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colorScheme.darkest,
+  },
 })
